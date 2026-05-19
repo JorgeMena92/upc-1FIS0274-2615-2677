@@ -175,7 +175,7 @@ especialistas["47485946"]["especialidad"]  # → "Medicina General"
 El archivo `turnos.py` va un nivel más profundo — diccionario dentro de diccionario dentro de diccionario:
  
 ```python
-turnos_junio = {
+turnos = {
     "20260601": {                         # nivel 1: fecha
         "fecha": "01/06/2026",
         "turnos": {
@@ -190,11 +190,11 @@ turnos_junio = {
 }
  
 # Para acceder al estado del turno 5 del 01/06/2026:
-turnos_junio["20260601"]["turnos"][5]["estado"]  # → "ASIGNADO"
+turnos["20260601"]["turnos"][5]["estado"]  # → "ASIGNADO"
  
 # Para modificarlo (así lo hace modificarCita.py):
-turnos_junio["20260601"]["turnos"][5]["estado"]   = "RESERVADO"
-turnos_junio["20260601"]["turnos"][5]["paciente"] = "LIBRE"
+turnos["20260601"]["turnos"][5]["estado"]   = "RESERVADO"
+turnos["20260601"]["turnos"][5]["paciente"] = "LIBRE"
 ```
  
 ### Recorrer un diccionario
