@@ -39,7 +39,7 @@ def registrar_cita():
 
     # Buscar turnos RESERVADOS de esos especialistas
     turnos_disponibles = {}
-    for idfecha, fecha_data in tur.turnos_junio.items():
+    for idfecha, fecha_data in tur.turnos.items():
         turnos_fecha = {
             idturno: turno
             for idturno, turno in fecha_data["turnos"].items()
@@ -87,10 +87,10 @@ def registrar_cita():
     idturno_seleccionado = int(input("Ingrese número de turno: "))
 
     # Guardar cita
-    tur.turnos_junio[idfecha]["turnos"][idturno_seleccionado]["estado"]   = "ASIGNADO"
-    tur.turnos_junio[idfecha]["turnos"][idturno_seleccionado]["paciente"] = dni
+    tur.turnos[idfecha]["turnos"][idturno_seleccionado]["estado"]   = "ASIGNADO"
+    tur.turnos[idfecha]["turnos"][idturno_seleccionado]["paciente"] = dni
 
-    turno_final = tur.turnos_junio[idfecha]["turnos"][idturno_seleccionado]
+    turno_final = tur.turnos[idfecha]["turnos"][idturno_seleccionado]
 
     # Resumen final
     print("\n--- Cita registrada exitosamente ---")
