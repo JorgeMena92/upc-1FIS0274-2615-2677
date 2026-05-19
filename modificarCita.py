@@ -10,7 +10,7 @@ def modificar_cita():
 
     # Buscar turnos ASIGNADO al paciente
     citas = {}
-    for idfecha, fecha_data in tur.turnos_junio.items():
+    for idfecha, fecha_data in tur.turnos.items():
         for idturno, turno in fecha_data["turnos"].items():
             if turno["estado"] == "ASIGNADO" and turno["paciente"] == dni:
                 citas[idturno] = {
@@ -43,8 +43,8 @@ def modificar_cita():
 
     # ── CANCELAR ──────────────────────────────────────────────────────────────
     if accion == "2":
-        tur.turnos_junio[idfecha]["turnos"][idturno_seleccionado]["estado"]   = "RESERVADO"
-        tur.turnos_junio[idfecha]["turnos"][idturno_seleccionado]["paciente"] = "LIBRE"
+        tur.turnos[idfecha]["turnos"][idturno_seleccionado]["estado"]   = "RESERVADO"
+        tur.turnos[idfecha]["turnos"][idturno_seleccionado]["paciente"] = "LIBRE"
         print("Cita cancelada exitosamente.")
 
     # ── REPROGRAMAR ───────────────────────────────────────────────────────────
@@ -55,8 +55,8 @@ def modificar_cita():
         idturno_anterior  = idturno_seleccionado
 
         # Liberar turno anterior
-        tur.turnos_junio[idfecha]["turnos"][idturno_seleccionado]["estado"]   = "RESERVADO"
-        tur.turnos_junio[idfecha]["turnos"][idturno_seleccionado]["paciente"] = "LIBRE"
+        tur.turnos[idfecha]["turnos"][idturno_seleccionado]["estado"]   = "RESERVADO"
+        tur.turnos[idfecha]["turnos"][idturno_seleccionado]["paciente"] = "LIBRE"
 
         # Buscar especialistas con la misma especialidad
         especialistas_filtrados = [
@@ -66,7 +66,7 @@ def modificar_cita():
 
         # Buscar turnos RESERVADOS disponibles (excluyendo el anterior)
         turnos_disponibles = {}
-        for idfecha2, fecha_data2 in tur.turnos_junio.items():
+        for idfecha2, fecha_data2 in tur.turnos.items():
             turnos_fecha = {
                 idturno: turno
                 for idturno, turno in fecha_data2["turnos"].items()
@@ -109,10 +109,10 @@ def modificar_cita():
         idturno_nuevo = int(input("Ingrese número de turno: "))
 
         # Guardar nuevo turno
-        tur.turnos_junio[idfecha2]["turnos"][idturno_nuevo]["estado"]   = "ASIGNADO"
-        tur.turnos_junio[idfecha2]["turnos"][idturno_nuevo]["paciente"] = dni
+        tur.turnos[idfecha2]["turnos"][idturno_nuevo]["estado"]   = "ASIGNADO"
+        tur.turnos[idfecha2]["turnos"][idturno_nuevo]["paciente"] = dni
 
-        turno_nuevo = tur.turnos_junio[idfecha2]["turnos"][idturno_nuevo]
+        turno_nuevo = tur.turnos[idfecha2]["turnos"][idturno_nuevo]
 
         # Resumen
         print("\n--- Cita reprogramada exitosamente ---")

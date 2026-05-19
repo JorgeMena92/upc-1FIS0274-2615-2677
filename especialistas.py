@@ -1,4 +1,3 @@
-
 # Datos de prueba precargados debido a que el proyecto no cuenta con
 # persistencia de datos al no utilizar base de datos. Estos valores
 # simulan registros previos para poder probar todas las funcionalidades.
@@ -33,5 +32,3 @@ especialista = {
     "especialidad"        : ""
 }
 '''
-
-print(especialistas)

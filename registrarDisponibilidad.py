@@ -17,7 +17,7 @@ def registrar_disponibilidad():
 
         # Recalcular fechas disponibles en cada iteración
         fechas_disponibles = [
-            idfecha for idfecha, fecha_data in tur.turnos_junio.items()
+            idfecha for idfecha, fecha_data in tur.turnos.items()
             if fecha_data["laborable"] == 1
             and idfecha not in fechas_ya_registradas
             and any(turno["estado"] == "LIBRE" for turno in fecha_data["turnos"].values())
@@ -30,7 +30,7 @@ def registrar_disponibilidad():
         # Mostrar fechas disponibles
         print("\n--- Fechas disponibles ---")
         for i, idfecha in enumerate(fechas_disponibles, start=1):
-            fecha_data = tur.turnos_junio[idfecha]
+            fecha_data = tur.turnos[idfecha]
             print(str(i) + " | " + fecha_data["dia"] + " - " + fecha_data["fecha"])
         print("--------------------------")
 
@@ -42,7 +42,7 @@ def registrar_disponibilidad():
 
         # Mostrar turnos libres
         turnos_libres = []
-        fecha_data = tur.turnos_junio[idfecha]
+        fecha_data = tur.turnos[idfecha]
         print("\n" + fecha_data["dia"] + " - " + fecha_data["fecha"])
         print("-----------------------------")
         for idturno, turno in fecha_data["turnos"].items():
@@ -64,7 +64,7 @@ def registrar_disponibilidad():
                 print("Turno ya seleccionado.")
             else:
                 turnos_seleccionados.append(seleccion)
-                print("Turno " + tur.turnos_junio[idfecha]["turnos"][seleccion]["turno"] + " agregado.")
+                print("Turno " + tur.turnos[idfecha]["turnos"][seleccion]["turno"] + " agregado.")
                 
         # Mostrar resumen
         print("\n--- Resumen de turnos seleccionados ---")
@@ -78,8 +78,8 @@ def registrar_disponibilidad():
             print("Registro cancelado.")
         else:
             for idturno in turnos_seleccionados:
-                tur.turnos_junio[idfecha]["turnos"][idturno]["estado"]       = "RESERVADO"
-                tur.turnos_junio[idfecha]["turnos"][idturno]["especialista"] = dni
+                tur.turnos[idfecha]["turnos"][idturno]["estado"]       = "RESERVADO"
+                tur.turnos[idfecha]["turnos"][idturno]["especialista"] = dni
             fechas_ya_registradas.append(idfecha)
             print("Turnos registrados exitosamente.")
 
@@ -87,3 +87,6 @@ def registrar_disponibilidad():
         otra = input("\n¿Desea registrar disponibilidad en otra fecha? (SI/NO): ")
         if otra.upper() != "SI":
             break
+
+
+registrar_disponibilidad()
