@@ -18,7 +18,7 @@ def main():
         print("3. Registrar disponibilidad de especialista")
         print("4. Registrar cita médica")
         print("5. Modificar cita médica")
-        print("0. Salir")
+        print("6. Salir")
         print("================================")
 
         opcion = input("\nSeleccione una opción: ")
@@ -33,7 +33,7 @@ def main():
             registrar_cita()
         elif opcion == "5":
             modificar_cita()
-        elif opcion == "0":
+        elif opcion == "6":
             print("Saliendo del sistema.")
             break
         else:

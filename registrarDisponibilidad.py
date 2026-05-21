@@ -1,6 +1,80 @@
 import especialistas as esp
 import turnos as tur
 
+
+def obtener_fechas_disponibles(fechas_ya_registradas):
+    fechas_disponibles = []
+    for idfecha, fecha_data in tur.turnos.items():
+        if fecha_data["laborable"] != 1:
+            continue
+        if idfecha in fechas_ya_registradas:
+            continue
+        for turno in fecha_data["turnos"].values():
+            if turno["estado"] == "LIBRE":
+                fechas_disponibles.append(idfecha)
+                break
+    return fechas_disponibles
+
+
+def mostrar_fechas(fechas_disponibles):
+    print("\n--- Fechas disponibles ---")
+    i = 1
+    for idfecha in fechas_disponibles:
+        fecha_data = tur.turnos[idfecha]
+        print(f"{i} | {fecha_data['dia']} - {fecha_data['fecha']}")
+        i += 1
+    print("--------------------------")
+
+
+def obtener_turnos_libres(idfecha):
+    turnos_libres = []
+    fecha_data = tur.turnos[idfecha]
+    print(f"\n{fecha_data['dia']} - {fecha_data['fecha']}")
+    print("-----------------------------")
+    for idturno, turno in fecha_data["turnos"].items():
+        if turno["estado"] == "LIBRE":
+            turnos_libres.append(idturno)
+            print(f"{idturno} | {turno['turno']}")
+    print("-----------------------------")
+    return turnos_libres
+
+
+def seleccionar_turnos(idfecha, turnos_libres):
+    turnos_seleccionados = []
+    while True:
+        seleccion = input("Ingrese número de turno (o 'fin' para terminar): ")
+        if seleccion == "fin":
+            break
+        seleccion = int(seleccion)
+        if seleccion not in turnos_libres:
+            print("Turno no válido o no disponible.")
+        elif seleccion in turnos_seleccionados:
+            print("Turno ya seleccionado.")
+        else:
+            turnos_seleccionados.append(seleccion)
+            print(f"Turno {tur.turnos[idfecha]['turnos'][seleccion]['turno']} agregado.")
+    return turnos_seleccionados
+
+
+def confirmar_y_guardar(idfecha, fecha, turnos_seleccionados, dni):
+    fecha_data = tur.turnos[idfecha]
+    print("\n--- Resumen de turnos seleccionados ---")
+    for idturno in turnos_seleccionados:
+        turno = fecha_data["turnos"][idturno]
+        print(f"{fecha_data['dia']} - {fecha}: {turno['turno']}")
+
+    confirmacion = input("\n¿Confirma el registro? (SI/NO): ")
+    if confirmacion.upper() != "SI":
+        print("Registro cancelado.")
+        return False
+
+    for idturno in turnos_seleccionados:
+        tur.turnos[idfecha]["turnos"][idturno]["estado"]       = "RESERVADO"
+        tur.turnos[idfecha]["turnos"][idturno]["especialista"] = dni
+    print("Turnos registrados exitosamente.")
+    return True
+
+
 def registrar_disponibilidad():
 
     # Identificar al especialista
@@ -15,78 +89,26 @@ def registrar_disponibilidad():
 
     while True:
 
-        # Recalcular fechas disponibles en cada iteración
-        fechas_disponibles = [
-            idfecha for idfecha, fecha_data in tur.turnos.items()
-            if fecha_data["laborable"] == 1
-            and idfecha not in fechas_ya_registradas
-            and any(turno["estado"] == "LIBRE" for turno in fecha_data["turnos"].values())
-        ]
-
-        if not fechas_disponibles:
+        fechas_disponibles = obtener_fechas_disponibles(fechas_ya_registradas)
+        if not fechas_disponibles: # validar si la lista está vacía
             print("No hay más fechas disponibles con turnos libres.")
-            break
+            print("Registro de disponibilidad finalizado.")
+            break # se termina si no hay fechas disponibles
 
-        # Mostrar fechas disponibles
-        print("\n--- Fechas disponibles ---")
-        for i, idfecha in enumerate(fechas_disponibles, start=1):
-            fecha_data = tur.turnos[idfecha]
-            print(str(i) + " | " + fecha_data["dia"] + " - " + fecha_data["fecha"])
-        print("--------------------------")
+        mostrar_fechas(fechas_disponibles)
 
-        # Solicitar fecha
         fecha = input("\nIngrese fecha (DD/MM/YYYY): ")
-        partes = fecha.split("/")
-        dia, mes, anio = partes
+        dia, mes, anio = fecha.split("/")
         idfecha = anio + mes + dia
 
-        # Mostrar turnos libres
-        turnos_libres = []
-        fecha_data = tur.turnos[idfecha]
-        print("\n" + fecha_data["dia"] + " - " + fecha_data["fecha"])
-        print("-----------------------------")
-        for idturno, turno in fecha_data["turnos"].items():
-            if turno["estado"] == "LIBRE":
-                turnos_libres.append(idturno)
-                print(str(idturno) + " | " + turno["turno"])
-        print("-----------------------------")
+        turnos_libres        = obtener_turnos_libres(idfecha)
+        turnos_seleccionados = seleccionar_turnos(idfecha, turnos_libres)
+        guardado             = confirmar_y_guardar(idfecha, fecha, turnos_seleccionados, dni)
 
-        # Seleccionar turnos
-        turnos_seleccionados = []
-        while True:
-            seleccion = input("Ingrese número de turno (o 'fin' para terminar): ")
-            if seleccion == "fin":
-                break
-            seleccion = int(seleccion)
-            if seleccion not in turnos_libres:          # ← validación agregada
-                print("Turno no válido o no disponible.")
-            elif seleccion in turnos_seleccionados:
-                print("Turno ya seleccionado.")
-            else:
-                turnos_seleccionados.append(seleccion)
-                print("Turno " + tur.turnos[idfecha]["turnos"][seleccion]["turno"] + " agregado.")
-                
-        # Mostrar resumen
-        print("\n--- Resumen de turnos seleccionados ---")
-        for idturno in turnos_seleccionados:
-            turno = fecha_data["turnos"][idturno]
-            print(fecha_data["dia"] + " - " + fecha + ": " + turno["turno"])
-
-        # Confirmación
-        confirmacion = input("\n¿Confirma el registro? (SI/NO): ")
-        if confirmacion.upper() != "SI":
-            print("Registro cancelado.")
-        else:
-            for idturno in turnos_seleccionados:
-                tur.turnos[idfecha]["turnos"][idturno]["estado"]       = "RESERVADO"
-                tur.turnos[idfecha]["turnos"][idturno]["especialista"] = dni
+        if guardado:
             fechas_ya_registradas.append(idfecha)
-            print("Turnos registrados exitosamente.")
 
-        # ¿Otra fecha?
         otra = input("\n¿Desea registrar disponibilidad en otra fecha? (SI/NO): ")
         if otra.upper() != "SI":
-            break
-
-
-registrar_disponibilidad()
+            print("Registro de disponibilidad finalizado.")
+            break # se termina si el usuario no desea continuar
